@@ -564,10 +564,11 @@ SSA() {
    if subHoney(config["settings"]["doublePassiveCheck"] * 500 || 10) < 0
       return -2
    send "e"
-   Sleep(250)
+   Sleep(500)
+   MouseMove(_w // 2 + (config["settings"]["doublePassiveCheck"] ? -90 : 100), yOffset + _h // 2 + 30)
    Click(_w // 2 + (config["settings"]["doublePassiveCheck"] ? -100 : 100), yOffset + _h // 2 + 30)
    MouseMove(_w // 2, _h // 2 + 150)
-   Sleep(300 + config["settings"]["keyDelay"])
+   Sleep(500 + config["settings"]["keyDelay"])
    pBitmap := Gdip_BitmapFromScreen(_x + _w // 2 + 20 "|" yOffset + _y + Round(0.4 * _h + 20) "|188|160")
    pBitmapResize := Gdip_ResizeBitmap(pBitmap, 376, 320), Gdip_DisposeImage(pBitmap)
    hBitmap := Gdip_CreateHBITMAPFromBitmap(pBitmapResize)
@@ -584,15 +585,16 @@ SSA() {
       for i, j in stats.ownProps()
          if InStr(v, i) {
             foundNum += j
-            break
+            continue
          }
-      if InStr(v, mainPassive) {
+      if InStr(v, mainPassive, false) {
          mainPassiveFound := 1
-         break
+         continue
       }
-      for i, j in sidePassives.OwnProps()
-         if InStr(v, i)
+      for i, j in sidePassives.OwnProps() {
+         if InStr(v, i, false)
             sidePassiveFound += j
+      }
    }
    requiredNum := 0
    for k, v in stats.OwnProps()
@@ -693,7 +695,9 @@ postFoundToWebhook() {
    embed.setTitle("Found your selection!")
    embed.setColor(0xFEC6DF)
    embed.setTimeStamp()
-   pBitmap := Gdip_BitmapFromScreen()
+   yOffset := GetYOffset()
+   WinGetClientPos(&windowX, &windowY, &windowWidth, &windowHeight, "ahk_id" Roblox())
+   pBitmap := Gdip_BitmapFromScreen(windowX + windowWidth // 2 - 156 "|" yOffset + windowY + Round(0.4 * windowHeight + 20) - 100 "|362|277")
    Gdip_SaveBitmapToFile(pBitmap, "ss.png")
    Gdip_DisposeImage(pBitmap)
    attachment := AttachmentBuilder("ss.png")
@@ -709,4 +713,5 @@ postFoundToWebhook() {
 #Include Gdip_All2.ahk
 #Include Gdip_ImageSearch2.ahk
 #include ocr2.ahk
+
 #include JSON.ahk
